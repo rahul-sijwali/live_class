@@ -6,24 +6,24 @@
 >
 > **Status tags:** 🟡 Planned · 🔵 In progress · 🟢 Implemented (file path given)
 >
-> **Last updated:** 2026-10-07 — deployment prep for the free demo (Render Singapore + Supabase);
-> code on GitHub, CI green for build, tests and Docker image.
+> **Last updated:** 2026-10-07 — free demo is live (Render Singapore + Supabase) and passed a
+> manual two-tab test (admin set-up, mentor and student in the same room).
 
 ---
 
 ## 0. Status summary
 
-| Area                                               | Status         | Evidence                                                                        |
-| -------------------------------------------------- | -------------- | ------------------------------------------------------------------------------- |
-| Repository scaffold (pnpm workspace, tooling, CI)  | 🟢 Implemented | `pnpm check` green; `.github/workflows/ci.yml`                                  |
-| `@live-class/shared`                               | 🟢 Implemented | 55 unit tests                                                                   |
-| `@live-class/core`                                 | 🟢 Implemented | 115 unit tests (jsdom)                                                          |
-| `@live-class/react`                                | 🟢 Implemented | 19 component tests                                                              |
-| `@live-class/server`                               | 🟢 Implemented | 60 tests incl. API over embedded Postgres and a live WebSocket sync test        |
-| `apps/demo` (static Next.js)                       | 🟢 Implemented | `next build` → 5 static pages                                                   |
-| End-to-end suites                                  | 🟢 Implemented | 3 Playwright tests, two browser contexts (mentor + student)                     |
-| Deployment artefacts (Dockerfile, Render, compose) | 🟢 Implemented | Docker image **built successfully in GitHub CI** (no Docker on the dev machine) |
-| Free demo deployment                               | 🔵 In progress | Code on GitHub; Supabase + Render accounts not created yet (§14.3)              |
+| Area                                               | Status         | Evidence                                                                                                                      |
+| -------------------------------------------------- | -------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| Repository scaffold (pnpm workspace, tooling, CI)  | 🟢 Implemented | `pnpm check` green; `.github/workflows/ci.yml`                                                                                |
+| `@live-class/shared`                               | 🟢 Implemented | 55 unit tests                                                                                                                 |
+| `@live-class/core`                                 | 🟢 Implemented | 115 unit tests (jsdom)                                                                                                        |
+| `@live-class/react`                                | 🟢 Implemented | 19 component tests                                                                                                            |
+| `@live-class/server`                               | 🟢 Implemented | 60 tests incl. API over embedded Postgres and a live WebSocket sync test                                                      |
+| `apps/demo` (static Next.js)                       | 🟢 Implemented | `next build` → 5 static pages                                                                                                 |
+| End-to-end suites                                  | 🟢 Implemented | 3 Playwright tests, two browser contexts (mentor + student)                                                                   |
+| Deployment artefacts (Dockerfile, Render, compose) | 🟢 Implemented | Docker image **built successfully in GitHub CI** (no Docker on the dev machine)                                               |
+| Free demo deployment                               | 🟢 Live        | https://live-class-demo.onrender.com (site), https://live-class-server-1mhk.onrender.com (server); manual test passed (§14.3) |
 
 Totals: 249 unit/component/API tests, coverage 90 % statements / 93 % lines / 76 % branches
 (gates in `vitest.config.ts`), bundle 63 kB (core) / 68 kB (react) brotli for the main chunk.
@@ -475,7 +475,17 @@ overages suspend rather than bill. Vercel Hobby is excluded (commercial use forb
 Fallbacks if Render asks for card verification: Railway free plan, SnapDeploy, Hugging Face
 Docker Spaces — the image is standard Docker, so nothing changes in the code.
 
-### 14.3 Free demo deployment — 🔵 In progress (repo on GitHub; Supabase/Render not created yet)
+### 14.3 Free demo deployment — 🟢 Live since 2026-10-07
+
+| What                                    | Address                                            |
+| --------------------------------------- | -------------------------------------------------- |
+| Demo site (static, never sleeps)        | https://live-class-demo.onrender.com               |
+| Server (free, sleeps after 15 min idle) | https://live-class-server-1mhk.onrender.com        |
+| Health check                            | https://live-class-server-1mhk.onrender.com/readyz |
+
+Render appended `-1mhk` to the server name, so the demo's `NEXT_PUBLIC_LIVE_CLASS_API` / `_WS` were
+set to the suffixed address and the demo rebuilt (step 3 below). Supabase project and Render
+services were created by the owner; the steps below are kept for re-creating them elsewhere.
 
 The repository is `github.com/rahul-sijwali/live_class` (private). CI on the first push:
 unit tests, lint, size budget and **Docker image build pass**; e2e passes after the script fix.
@@ -550,6 +560,12 @@ frontend, host `apps/demo/out` on any static host, and set the two `NEXT_PUBLIC_
   drops and returns within milliseconds on a document with no pending changes could still
   race the unload. Not observed after the fix (9/9 e2e runs).
 - The Docker image has not been built on this machine (no Docker); CI builds it.
+- Demo UX found in the first manual test (requested by the owner for later):
+  - after a free-tier sleep the first request can exceed the 15 s API timeout (`API_TIMEOUT_MS`)
+    and shows "timed out"; wanted: wait longer and show "waking up the server";
+  - mentors and students land on the home page after login and need the room link; wanted: a
+    "My classes" list with Join buttons;
+  - opening a room link while logged out should log in and return to that room.
 - Open: should ad hoc mentor uploads join the bank (today they do, tagged `adhoc`)?
 - Open: folders/collections beyond tags?
 - Open: should the mentor's scroll position be shared (follow scroll, not just sheet)?
@@ -564,3 +580,4 @@ frontend, host `apps/demo/out` on any static host, and set the two `NEXT_PUBLIC_
 | 2026-10-07 | Sync-stability fix (D-021), `RATE_LIMIT_LOGIN_PER_MINUTE`, stage diagnostic attributes; e2e sign-in via API token with one form-based test.                                                                                                                                                           |
 | 2026-10-07 | Deployment prep: Render server in Singapore, Supabase session-pooler URL with `sslmode=no-verify`, removed the static-site rewrite rule, `NODE_VERSION=24` for the static build, root `test:e2e` points at its config; §14.3 rewritten as a click-by-click guide; Docker image build confirmed in CI. |
 | 2026-10-07 | Render static build: removed `npm install -g pnpm` (Render supplies pnpm from `packageManager`; its global npm folder is read-only, which failed the first demo deploy).                                                                                                                              |
+| 2026-10-07 | Demo live on Render + Supabase with real addresses (§0, §14.3); recorded three UX follow-ups from the first manual test (§16).                                                                                                                                                                        |
