@@ -1,0 +1,8 @@
+# lint-staged handles JSON/Markdown/YAML/CSS per staged file (small counts, safe).
+# TypeScript/JS are checked project-wide instead of being passed as a per-file argument
+# list: on Windows, a large staged-file set (e.g. the first commit) overflows the OS
+# command-line length limit when every path is passed to eslint/prettier individually.
+pnpm lint-staged
+pnpm typecheck
+pnpm lint
+pnpm format:check

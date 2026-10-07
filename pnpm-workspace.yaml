@@ -1,0 +1,39 @@
+packages:
+  - 'packages/*'
+  - 'apps/*'
+  - 'e2e'
+
+# pnpm's release-age guard excluded these because they were published very recently;
+# they are the typescript-eslint line pinned in the root package.json.
+minimumReleaseAgeExclude:
+  - '@typescript-eslint/eslint-plugin@8.71.1'
+  - '@typescript-eslint/parser@8.71.1'
+  - '@typescript-eslint/project-service@8.71.1'
+  - '@typescript-eslint/scope-manager@8.71.1'
+  - '@typescript-eslint/tsconfig-utils@8.71.1'
+  - '@typescript-eslint/type-utils@8.71.1'
+  - '@typescript-eslint/types@8.71.1'
+  - '@typescript-eslint/typescript-estree@8.71.1'
+  - '@typescript-eslint/utils@8.71.1'
+  - '@typescript-eslint/visitor-keys@8.71.1'
+  - typescript-eslint@8.71.1
+  - '@eslint-react/ast@5.24.8'
+  - '@eslint-react/core@5.24.8'
+  - '@eslint-react/eslint-plugin@5.24.8'
+  - '@eslint-react/eslint@5.24.8'
+  - '@eslint-react/jsx@5.24.8'
+  - '@eslint-react/shared@5.24.8'
+  - '@eslint-react/var@5.24.8'
+  - eslint-plugin-react-dom@5.24.8
+  - eslint-plugin-react-jsx@5.24.8
+  - eslint-plugin-react-naming-convention@5.24.8
+  - eslint-plugin-react-rsc@5.24.8
+  - eslint-plugin-react-web-api@5.24.8
+  - eslint-plugin-react-x@5.24.8
+
+# Only these dependencies may run install-time build scripts (native binaries / WASM).
+# Everything else is blocked, which is the supply-chain posture we want.
+allowBuilds:
+  sharp: true
+  esbuild: true
+  '@electric-sql/pglite': true

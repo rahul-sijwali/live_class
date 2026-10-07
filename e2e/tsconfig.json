@@ -1,0 +1,17 @@
+{
+  "extends": "../tsconfig.base.json",
+  "compilerOptions": {
+    "rootDir": ".",
+    "outDir": "dist",
+    "tsBuildInfoFile": "dist/.tsbuildinfo",
+    "lib": ["ES2022", "DOM"],
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"],
+    "noEmit": false,
+    "emitDeclarationOnly": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": ["node_modules", "dist", "playwright-report", "test-results"],
+  "references": [{ "path": "../packages/shared" }]
+}

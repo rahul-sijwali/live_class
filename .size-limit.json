@@ -1,0 +1,24 @@
+[
+  {
+    "name": "@live-class/core main chunk (lazy pdf.js and KaTeX/markdown excluded)",
+    "path": "packages/core/dist/index.js",
+    "import": "{ SheetController, RealtimeClient, LiveClassApi, RoomStore }",
+    "ignore": ["pdfjs-dist", "katex", "markdown-it", "@vscode/markdown-it-katex", "dompurify"],
+    "limit": "150 kB"
+  },
+  {
+    "name": "@live-class/react main chunk (react, lazy pdf.js and KaTeX/markdown excluded)",
+    "path": "packages/react/dist/index.js",
+    "import": "{ LiveClassProvider, LiveClassRoom }",
+    "ignore": [
+      "react",
+      "react-dom",
+      "pdfjs-dist",
+      "katex",
+      "markdown-it",
+      "@vscode/markdown-it-katex",
+      "dompurify"
+    ],
+    "limit": "160 kB"
+  }
+]

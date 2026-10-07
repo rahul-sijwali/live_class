@@ -1,0 +1,75 @@
+# Render Blueprint (optional convenience). Everything here can be recreated by hand in any
+# other provider: the server is a Docker image that reads the environment variables listed
+# in .env.example; the demo is a folder of static files.
+#
+# Free tier notes (live_class.md §14): pick the Free plans, never add a payment method,
+# and set DATABASE_URL / S3_* to the Supabase project's values.
+services:
+  - type: web
+    name: live-class-server
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /healthz
+    autoDeploy: true
+    envVars:
+      # Public demo: JSON logs, seeded local login allowed. Use `production` once the host
+      # app issues tokens.
+      - key: NODE_ENV
+        value: demo
+      - key: TRUST_PROXY
+        value: 'true'
+      - key: CORS_ORIGINS
+        sync: false # e.g. https://live-class-demo.onrender.com
+      - key: DATABASE_URL
+        sync: false # Supabase: postgres://postgres.<ref>:<password>@aws-0-<region>.pooler.supabase.com:6543/postgres
+      - key: DB_MIGRATE_ON_START
+        value: 'true'
+      - key: STORAGE_DRIVER
+        value: s3
+      - key: S3_ENDPOINT
+        sync: false # https://<ref>.supabase.co/storage/v1/s3
+      - key: S3_REGION
+        sync: false # shown in Supabase → Storage → S3 settings
+      - key: S3_BUCKET
+        value: live-class
+      - key: S3_ACCESS_KEY_ID
+        sync: false
+      - key: S3_SECRET_ACCESS_KEY
+        sync: false
+      - key: S3_FORCE_PATH_STYLE
+        value: 'true'
+      - key: AUTH_HOST_SHARED_SECRET
+        generateValue: true
+      - key: AUTH_HOST_ISSUER
+        value: live-class-host
+      - key: AUTH_HOST_AUDIENCE
+        value: live-class
+      - key: AUTH_LOCAL_ENABLED
+        value: 'true'
+      - key: AUTH_LOCAL_JWT_SECRET
+        generateValue: true
+      - key: AUTH_LOCAL_SEED_PASSWORD
+        sync: false
+      - key: LOG_LEVEL
+        value: info
+      - key: LOG_PRETTY
+        value: 'false'
+
+  - type: web
+    name: live-class-demo
+    runtime: static
+    plan: free
+    buildCommand: npm install -g pnpm@12.9.1 && pnpm install --frozen-lockfile && pnpm build && pnpm --filter @live-class/demo build
+    staticPublishPath: apps/demo/out
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_LIVE_CLASS_API
+        sync: false # https://live-class-server.onrender.com
+      - key: NEXT_PUBLIC_LIVE_CLASS_WS
+        sync: false # wss://live-class-server.onrender.com/realtime
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html

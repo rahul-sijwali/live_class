@@ -1,0 +1,13 @@
+node_modules
+dist
+out
+.next
+coverage
+playwright-report
+test-results
+pnpm-lock.yaml
+.data
+packages/server/src/db/migrations/meta
+apps/demo/public/pdf.worker.min.mjs
+**/drizzle/meta
+apps/demo/next-env.d.ts

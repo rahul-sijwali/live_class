@@ -1,0 +1,29 @@
+{
+  "name": "@live-class/demo",
+  "version": "0.1.0",
+  "description": "Static Next.js demo that embeds the Live Class package the way a host app would.",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-pdf-worker.mjs",
+    "dev": "next dev --port 3000",
+    "prebuild": "node scripts/copy-pdf-worker.mjs",
+    "build": "next build",
+    "start": "serve out --listen 3000 --no-clipboard",
+    "clean": "node -e \"require('node:fs').rmSync('out',{recursive:true,force:true});require('node:fs').rmSync('.next',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "@live-class/react": "workspace:*",
+    "@live-class/shared": "workspace:*",
+    "next": "^16.3.8",
+    "pdfjs-dist": "^6.4.299",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "serve": "^14.2.6"
+  }
+}

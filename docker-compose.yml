@@ -1,0 +1,75 @@
+# Self-hosted alternative to the free PaaS setup: one VPS running the server, Postgres and
+# an S3-compatible store. Same image, same environment variables, no code changes
+# (live_class.md §14 "switching providers").
+#
+#   docker compose up -d --build
+#
+services:
+  server:
+    build: .
+    restart: unless-stopped
+    ports:
+      - '4000:4000'
+    environment:
+      NODE_ENV: ${NODE_ENV:-demo}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3000}
+      DATABASE_URL: postgres://liveclass:liveclass@postgres:5432/liveclass
+      DB_MIGRATE_ON_START: 'true'
+      STORAGE_DRIVER: s3
+      S3_ENDPOINT: http://minio:9000
+      S3_REGION: us-east-1
+      S3_BUCKET: live-class
+      S3_ACCESS_KEY_ID: liveclass
+      S3_SECRET_ACCESS_KEY: liveclass-secret
+      S3_FORCE_PATH_STYLE: 'true'
+      AUTH_HOST_SHARED_SECRET: ${AUTH_HOST_SHARED_SECRET:-change-me-change-me-change-me-change-me}
+      AUTH_LOCAL_ENABLED: ${AUTH_LOCAL_ENABLED:-true}
+      AUTH_LOCAL_JWT_SECRET: ${AUTH_LOCAL_JWT_SECRET:-change-me-change-me-change-me-change-me}
+      AUTH_LOCAL_SEED_PASSWORD: ${AUTH_LOCAL_SEED_PASSWORD:-password123}
+      LOG_LEVEL: info
+    depends_on:
+      postgres:
+        condition: service_healthy
+      minio-init:
+        condition: service_completed_successfully
+
+  postgres:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: liveclass
+      POSTGRES_PASSWORD: liveclass
+      POSTGRES_DB: liveclass
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U liveclass']
+      interval: 5s
+      timeout: 3s
+      retries: 20
+
+  minio:
+    image: minio/minio:latest
+    restart: unless-stopped
+    command: server /data --console-address ':9001'
+    environment:
+      MINIO_ROOT_USER: liveclass
+      MINIO_ROOT_PASSWORD: liveclass-secret
+    volumes:
+      - minio-data:/data
+    ports:
+      - '9001:9001'
+
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      - minio
+    entrypoint: >
+      /bin/sh -c "
+      until mc alias set local http://minio:9000 liveclass liveclass-secret; do sleep 1; done;
+      mc mb --ignore-existing local/live-class;
+      "
+
+volumes:
+  postgres-data:
+  minio-data:

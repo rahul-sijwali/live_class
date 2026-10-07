@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json.schemastore.org/tsconfig",
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "noEmit": true,
+    "composite": false,
+    "incremental": false,
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "types": ["node"]
+  },
+  "include": ["*.config.ts", "packages/*/vitest.config.ts", "e2e/playwright.config.ts"],
+  "references": [
+    { "path": "packages/shared" },
+    { "path": "packages/core" },
+    { "path": "packages/react" },
+    { "path": "packages/server" },
+    { "path": "apps/demo" },
+    { "path": "e2e" }
+  ]
+}

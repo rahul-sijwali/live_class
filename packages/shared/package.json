@@ -1,0 +1,28 @@
+{
+  "name": "@live-class/shared",
+  "version": "0.1.0",
+  "description": "Schemas, types, constants and error codes shared by the Live Class client and server.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "sideEffects": false,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "default": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "!dist/**/*.test.*"
+  ],
+  "scripts": {
+    "build": "tsc -b",
+    "dev": "tsc -b --watch --preserveWatchOutput",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\""
+  },
+  "dependencies": {
+    "uuid": "^14.0.2",
+    "zod": "^4.6.5"
+  }
+}

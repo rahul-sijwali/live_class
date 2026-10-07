@@ -1,0 +1,428 @@
+/* KaTeX styles for rendered maths; resolved from this package's dependencies. */
+@import 'katex/dist/katex.min.css';
+
+/* @live-class/react — scoped styles. Every selector starts with .lc- so the host page's
+   CSS and ours cannot collide. Colours are tokens so a host can re-theme by overriding
+   the custom properties on .lc-root or any ancestor. */
+
+:root,
+.lc-root {
+  --lc-bg: #ffffff;
+  --lc-surface: #f8fafc;
+  --lc-border: #e2e8f0;
+  --lc-text: #0f172a;
+  --lc-muted: #64748b;
+  --lc-primary: #1d4ed8;
+  --lc-primary-contrast: #ffffff;
+  --lc-danger: #b91c1c;
+  --lc-focus: #2563eb;
+  --lc-radius: 8px;
+  --lc-sheet-bg: #ffffff;
+  --lc-sheet-shadow: 0 1px 3px rgba(15, 23, 42, 0.12);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']),
+  .lc-root:not([data-theme='light']) {
+    --lc-bg: #0b1220;
+    --lc-surface: #111a2e;
+    --lc-border: #263247;
+    --lc-text: #e2e8f0;
+    --lc-muted: #94a3b8;
+    --lc-primary: #60a5fa;
+    --lc-primary-contrast: #0b1220;
+    --lc-danger: #f87171;
+    --lc-focus: #93c5fd;
+    --lc-sheet-bg: #ffffff;
+  }
+}
+
+.lc-room,
+.lc-bank,
+.lc-setup,
+.lc-notice {
+  color: var(--lc-text);
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  font-size: 15px;
+  line-height: 1.4;
+  box-sizing: border-box;
+}
+.lc-room *,
+.lc-bank *,
+.lc-setup * {
+  box-sizing: border-box;
+}
+
+/* --- layout -------------------------------------------------------------------------- */
+.lc-room {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  height: 100%;
+  min-height: 480px;
+  background: var(--lc-bg);
+  padding: 8px 16px;
+}
+.lc-room-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.lc-room-title {
+  margin: 0;
+  font-size: 18px;
+}
+.lc-room-body {
+  display: flex;
+  gap: 12px;
+  flex: 1 1 auto;
+  min-height: 0;
+}
+.lc-room-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+}
+.lc-stage-container {
+  position: relative;
+  flex: 1 1 auto;
+  overflow: auto;
+  background: var(--lc-surface);
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+  overscroll-behavior: contain;
+}
+.lc-sheet {
+  background: var(--lc-sheet-bg);
+  box-shadow: var(--lc-sheet-shadow);
+  color: #111827;
+}
+.lc-sheet-content img,
+.lc-sheet-content canvas {
+  display: block;
+}
+.lc-question-text {
+  font-family: Georgia, 'Times New Roman', serif;
+}
+.lc-question-text .katex-display {
+  margin: 0.6em 0;
+}
+.lc-empty {
+  flex: 1 1 auto;
+  display: grid;
+  place-items: center;
+  padding: 32px;
+  color: var(--lc-muted);
+  border: 1px dashed var(--lc-border);
+  border-radius: var(--lc-radius);
+}
+
+/* --- toolbar ------------------------------------------------------------------------- */
+.lc-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+  padding: 8px;
+  background: var(--lc-surface);
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+}
+.lc-toolbar-group {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.lc-button,
+.lc-tab,
+.lc-link {
+  min-height: 44px;
+  min-width: 44px;
+  padding: 0 12px;
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+  background: var(--lc-bg);
+  color: var(--lc-text);
+  font: inherit;
+  cursor: pointer;
+}
+.lc-button:disabled,
+.lc-tab:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.lc-button:focus-visible,
+.lc-tab:focus-visible,
+.lc-swatch:focus-visible,
+.lc-input:focus-visible,
+.lc-link:focus-visible,
+input:focus-visible {
+  outline: 3px solid var(--lc-focus);
+  outline-offset: 2px;
+}
+.lc-button-primary {
+  background: var(--lc-primary);
+  color: var(--lc-primary-contrast);
+  border-color: var(--lc-primary);
+}
+.lc-button-danger {
+  color: var(--lc-danger);
+  border-color: var(--lc-danger);
+}
+.lc-tool-active {
+  background: var(--lc-primary);
+  color: var(--lc-primary-contrast);
+  border-color: var(--lc-primary);
+}
+.lc-swatch {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  border: 3px solid transparent;
+  cursor: pointer;
+  padding: 0;
+}
+.lc-swatch-active {
+  border-color: var(--lc-focus);
+}
+.lc-size input {
+  width: 120px;
+}
+.lc-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+}
+.lc-link {
+  border: none;
+  background: transparent;
+  text-align: left;
+  padding: 0;
+  min-width: 0;
+}
+
+/* --- tabs ---------------------------------------------------------------------------- */
+.lc-tabs {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+.lc-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  white-space: nowrap;
+}
+.lc-tab-active {
+  border-color: var(--lc-primary);
+  box-shadow: inset 0 0 0 1px var(--lc-primary);
+}
+.lc-tab-index {
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--lc-surface);
+  font-size: 12px;
+}
+.lc-tab-badge {
+  color: var(--lc-primary);
+}
+
+/* --- presence ------------------------------------------------------------------------ */
+.lc-presence {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lc-presence-list {
+  display: flex;
+  gap: 12px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.lc-presence-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.lc-presence-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--lc-muted);
+}
+.lc-status {
+  padding: 2px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--lc-border);
+  font-size: 13px;
+}
+.lc-status-connected {
+  color: #047857;
+  border-color: #047857;
+}
+.lc-status-connecting,
+.lc-status-disconnected {
+  color: #b45309;
+  border-color: #b45309;
+}
+.lc-status-unauthorized {
+  color: var(--lc-danger);
+  border-color: var(--lc-danger);
+}
+
+/* --- picker, bank, setup ------------------------------------------------------------- */
+.lc-picker {
+  flex: 0 0 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  overflow: auto;
+  padding: 12px;
+  background: var(--lc-surface);
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+}
+.lc-heading {
+  margin: 0 0 8px;
+  font-size: 15px;
+}
+.lc-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lc-list-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 6px 8px;
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+  background: var(--lc-bg);
+}
+.lc-list-item-active {
+  border-color: var(--lc-primary);
+}
+.lc-bank-item {
+  justify-content: flex-start;
+}
+.lc-bank-meta {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.lc-bank-actions {
+  display: flex;
+  gap: 6px;
+}
+.lc-bank-filters,
+.lc-inline {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.lc-thumb {
+  width: 64px;
+  height: 40px;
+  object-fit: cover;
+  border-radius: 4px;
+  background: var(--lc-surface);
+  display: inline-grid;
+  place-items: center;
+  font-size: 12px;
+  color: var(--lc-muted);
+  flex: 0 0 auto;
+}
+.lc-card {
+  padding: 12px;
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+  background: var(--lc-surface);
+  margin-bottom: 12px;
+}
+.lc-form {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.lc-form-actions {
+  display: flex;
+  gap: 8px;
+}
+.lc-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+}
+.lc-input {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--lc-border);
+  border-radius: var(--lc-radius);
+  background: var(--lc-bg);
+  color: var(--lc-text);
+  font: inherit;
+}
+.lc-textarea {
+  min-height: 120px;
+  resize: vertical;
+}
+.lc-segment {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.lc-muted {
+  color: var(--lc-muted);
+}
+.lc-notice {
+  padding: 12px 16px;
+  border-radius: var(--lc-radius);
+  background: var(--lc-surface);
+  border: 1px solid var(--lc-border);
+}
+.lc-notice-error {
+  border-color: var(--lc-danger);
+  color: var(--lc-danger);
+}
+.lc-visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
+@media (max-width: 720px) {
+  .lc-room {
+    padding: 8px;
+  }
+  .lc-room-body {
+    flex-direction: column;
+  }
+  .lc-picker {
+    flex-basis: auto;
+  }
+}

@@ -1,0 +1,59 @@
+{
+  "name": "live-class",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Live 1:1 maths worksheet: shared question sheets with freehand ink, synced in real time.",
+  "license": "UNLICENSED",
+  "type": "module",
+  "packageManager": "pnpm@12.9.1",
+  "engines": {
+    "node": ">=22.12.0"
+  },
+  "scripts": {
+    "check": "pnpm typecheck && pnpm lint && pnpm format:check && pnpm test",
+    "typecheck": "tsc -b tsconfig.json",
+    "lint": "eslint . --max-warnings 0",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "build": "pnpm -r --filter './packages/*' build",
+    "build:all": "pnpm -r build",
+    "dev": "pnpm -r --parallel --filter './packages/server' --filter './apps/demo' dev",
+    "db:generate": "pnpm --filter @live-class/server db:generate",
+    "db:migrate": "pnpm --filter @live-class/server db:migrate",
+    "size": "size-limit",
+    "prepare": "husky"
+  },
+  "lint-staged": {
+    "*.{json,md,yml,yaml,css}": [
+      "prettier --write"
+    ]
+  },
+  "devDependencies": {
+    "@eslint-react/eslint-plugin": "^5.24.8",
+    "@eslint/js": "^9.39.0",
+    "@playwright/test": "^1.63.0",
+    "@size-limit/preset-small-lib": "^14.1.0",
+    "@types/node": "^24.0.0",
+    "@vitest/coverage-v8": "^5.0.3",
+    "eslint": "^10.12.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-jsdoc": "^65.1.0",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "eslint-plugin-tsdoc": "^0.5.4",
+    "globals": "^16.0.0",
+    "husky": "^9.1.7",
+    "jsdom": "^30.1.2",
+    "lint-staged": "^17.6.0",
+    "prettier": "^3.9.9",
+    "size-limit": "^14.1.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.71.1",
+    "vitest": "^5.0.3"
+  }
+}

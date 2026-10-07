@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+out/
+.next/
+*.tsbuildinfo
+
+# Local data (embedded Postgres file, uploaded files in local storage mode)
+.data/
+
+# Environment files (keep .env.example)
+.env
+.env.*
+!.env.example
+
+# Copied at build time by apps/demo/scripts/copy-pdf-worker.mjs
+apps/demo/public/pdf.worker.min.mjs
+
+# Test and tooling output
+coverage/
+playwright-report/
+test-results/
+blob-report/
+.eslintcache
+
+# OS and editor noise
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Logs
+*.log
+npm-debug.log*
+pnpm-debug.log*

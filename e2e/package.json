@@ -1,0 +1,15 @@
+{
+  "name": "@live-class/e2e",
+  "version": "0.1.0",
+  "description": "Playwright end-to-end suites: two browser contexts (mentor and student) against the demo app and server.",
+  "license": "UNLICENSED",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "playwright test"
+  },
+  "devDependencies": {
+    "@live-class/shared": "workspace:*",
+    "@playwright/test": "^1.63.0"
+  }
+}
