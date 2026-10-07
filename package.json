@@ -19,7 +19,7 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "test:e2e": "playwright test",
+    "test:e2e": "playwright test --config e2e/playwright.config.ts",
     "build": "pnpm -r --filter './packages/*' build",
     "build:all": "pnpm -r build",
     "dev": "pnpm -r --parallel --filter './packages/server' --filter './apps/demo' dev",

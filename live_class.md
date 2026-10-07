@@ -6,24 +6,24 @@
 >
 > **Status tags:** 🟡 Planned · 🔵 In progress · 🟢 Implemented (file path given)
 >
-> **Last updated:** 2026-10-07 — first complete vertical slice implemented and verified
-> end-to-end (admin → session → mentor opens question → ink syncs to student → undo).
+> **Last updated:** 2026-10-07 — deployment prep for the free demo (Render Singapore + Supabase);
+> code on GitHub, CI green for build, tests and Docker image.
 
 ---
 
 ## 0. Status summary
 
-| Area                                               | Status         | Evidence                                                                   |
-| -------------------------------------------------- | -------------- | -------------------------------------------------------------------------- |
-| Repository scaffold (pnpm workspace, tooling, CI)  | 🟢 Implemented | `pnpm check` green; `.github/workflows/ci.yml`                             |
-| `@live-class/shared`                               | 🟢 Implemented | 55 unit tests                                                              |
-| `@live-class/core`                                 | 🟢 Implemented | 115 unit tests (jsdom)                                                     |
-| `@live-class/react`                                | 🟢 Implemented | 19 component tests                                                         |
-| `@live-class/server`                               | 🟢 Implemented | 60 tests incl. API over embedded Postgres and a live WebSocket sync test   |
-| `apps/demo` (static Next.js)                       | 🟢 Implemented | `next build` → 5 static pages                                              |
-| End-to-end suites                                  | 🟢 Implemented | 3 Playwright tests, two browser contexts (mentor + student)                |
-| Deployment artefacts (Dockerfile, Render, compose) | 🟢 Implemented | Image **not yet built here** (no Docker on this machine); CI job builds it |
-| Free demo deployment steps                         | 🟡 Planned     | §14.3 lists them; not yet executed                                         |
+| Area                                               | Status         | Evidence                                                                        |
+| -------------------------------------------------- | -------------- | ------------------------------------------------------------------------------- |
+| Repository scaffold (pnpm workspace, tooling, CI)  | 🟢 Implemented | `pnpm check` green; `.github/workflows/ci.yml`                                  |
+| `@live-class/shared`                               | 🟢 Implemented | 55 unit tests                                                                   |
+| `@live-class/core`                                 | 🟢 Implemented | 115 unit tests (jsdom)                                                          |
+| `@live-class/react`                                | 🟢 Implemented | 19 component tests                                                              |
+| `@live-class/server`                               | 🟢 Implemented | 60 tests incl. API over embedded Postgres and a live WebSocket sync test        |
+| `apps/demo` (static Next.js)                       | 🟢 Implemented | `next build` → 5 static pages                                                   |
+| End-to-end suites                                  | 🟢 Implemented | 3 Playwright tests, two browser contexts (mentor + student)                     |
+| Deployment artefacts (Dockerfile, Render, compose) | 🟢 Implemented | Docker image **built successfully in GitHub CI** (no Docker on the dev machine) |
+| Free demo deployment                               | 🔵 In progress | Code on GitHub; Supabase + Render accounts not created yet (§14.3)              |
 
 Totals: 249 unit/component/API tests, coverage 90 % statements / 93 % lines / 76 % branches
 (gates in `vitest.config.ts`), bundle 63 kB (core) / 68 kB (react) brotli for the main chunk.
@@ -475,16 +475,30 @@ overages suspend rather than bill. Vercel Hobby is excluded (commercial use forb
 Fallbacks if Render asks for card verification: Railway free plan, SnapDeploy, Hugging Face
 Docker Spaces — the image is standard Docker, so nothing changes in the code.
 
-### 14.3 Free demo deployment — 🟡 Planned (steps ready, not executed yet)
+### 14.3 Free demo deployment — 🔵 In progress (repo on GitHub; Supabase/Render not created yet)
 
-1. Push the repository to GitHub.
-2. Supabase: create a free project → copy the pooled `DATABASE_URL`; Storage → create bucket
-   `live-class` (private) → S3 settings → create access keys; note endpoint and region.
-3. Render: "New +" → Blueprint → select the repo (`render.yaml`), **choose Free plans**, fill
-   the `sync: false` variables (`CORS_ORIGINS` = the static site URL, `DATABASE_URL`, `S3_*`,
-   `AUTH_LOCAL_SEED_PASSWORD`). `NODE_ENV=demo` keeps the seeded login available.
-4. After the first deploy, set `NEXT_PUBLIC_LIVE_CLASS_API` / `_WS` on the static site to the
-   server's URL (`https://…onrender.com`, `wss://…onrender.com/realtime`) and redeploy it.
+The repository is `github.com/rahul-sijwali/live_class` (private). CI on the first push:
+unit tests, lint, size budget and **Docker image build pass**; e2e passes after the script fix.
+
+1. **Supabase** (supabase.com, sign in with GitHub, no card): New project → region
+   **Southeast Asia (Singapore)** → save the database password.
+   - _Connect_ → **Session pooler** URI (port 5432, IPv4) → replace `[YOUR-PASSWORD]` and append
+     `?sslmode=no-verify` → this is `DATABASE_URL`. (The direct `db.<ref>.supabase.co` host is
+     IPv6-only and Render cannot reach it; `no-verify` because Supabase signs with its own CA.)
+   - _Storage_ → New bucket `live-class`, **private**.
+   - _Storage → Settings → S3 Connection_: copy the **Endpoint** (`S3_ENDPOINT`) and **Region**
+     (`S3_REGION`); _New access key_ → `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY`.
+2. **Render** (render.com, sign in with GitHub, no card): _New → Blueprint_ → pick the repo →
+   it reads `render.yaml` and creates `live-class-server` (free, Singapore) and
+   `live-class-demo` (static). Fill the prompted values:
+   - server: `CORS_ORIGINS=https://live-class-demo.onrender.com`, `DATABASE_URL`, the four `S3_*`,
+     `AUTH_LOCAL_SEED_PASSWORD` (any password; used by the three seeded accounts);
+   - demo: `NEXT_PUBLIC_LIVE_CLASS_API=https://live-class-server.onrender.com`,
+     `NEXT_PUBLIC_LIVE_CLASS_WS=wss://live-class-server.onrender.com/realtime`.
+3. When both deploys finish, compare the real addresses on each service page with the guesses
+   above. If Render added a suffix, correct the values, then _Manual Deploy → Deploy latest
+   commit_ on the **demo** (its values are baked in at build time).
+4. Check `https://live-class-server.onrender.com/readyz` → `{"ok":true,"database":true,"storage":true}`.
 5. Never add a payment method to either account while on the free tiers.
 
 ### 14.4 Switching hosting providers
@@ -542,10 +556,10 @@ frontend, host `apps/demo/out` on any static host, and set the two `NEXT_PUBLIC_
 
 ## 17. Changelog of this document
 
-| Date       | Change                                                                                                                                                                                                                                     |
-| ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| 2026-10-06 | Initial architecture written before any code.                                                                                                                                                                                              |
-| 2026-10-06 | Added zero-cost deployment constraint, deployment tiers, D-015/D-016, provider verification.                                                                                                                                               |
-| 2026-10-07 | Sync-stability fix (D-021), `RATE_LIMIT_LOGIN_PER_MINUTE`, stage diagnostics attributes; e2e sign-in via API token with one form-based test.                                                                                               |
-| 2026-10-07 | Everything implemented: statuses → 🟢 with file paths; added `RoomStore`, `getSessionQuestion` route, `demo` NODE_ENV, Docker/Render/compose artefacts, e2e suites, D-017–D-020, coverage and bundle figures, switching-providers section. |
-| 2026-10-07 | Sync-stability fix (D-021), `RATE_LIMIT_LOGIN_PER_MINUTE`, stage diagnostic attributes; e2e sign-in via API token with one form-based test.                                                                                                |
+| Date       | Change                                                                                                                                                                                                                                                                                                |
+| ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-06 | Initial architecture written before any code.                                                                                                                                                                                                                                                         |
+| 2026-10-06 | Added zero-cost deployment constraint, deployment tiers, D-015/D-016, provider verification.                                                                                                                                                                                                          |
+| 2026-10-07 | Everything implemented: statuses → 🟢 with file paths; added `RoomStore`, `getSessionQuestion` route, `demo` NODE_ENV, Docker/Render/compose artefacts, e2e suites, D-017–D-020, coverage and bundle figures, switching-providers section.                                                            |
+| 2026-10-07 | Sync-stability fix (D-021), `RATE_LIMIT_LOGIN_PER_MINUTE`, stage diagnostic attributes; e2e sign-in via API token with one form-based test.                                                                                                                                                           |
+| 2026-10-07 | Deployment prep: Render server in Singapore, Supabase session-pooler URL with `sslmode=no-verify`, removed the static-site rewrite rule, `NODE_VERSION=24` for the static build, root `test:e2e` points at its config; §14.3 rewritten as a click-by-click guide; Docker image build confirmed in CI. |
