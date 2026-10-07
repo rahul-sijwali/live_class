@@ -67,7 +67,9 @@ services:
   - type: web
     name: live-class-demo
     runtime: static
-    buildCommand: npm install -g pnpm@12.9.1 && pnpm install --frozen-lockfile && pnpm build && pnpm --filter @live-class/demo build
+    # Render provides pnpm itself (from `packageManager` in package.json) and its global
+    # npm folder is read-only, so the build must not try to install pnpm.
+    buildCommand: pnpm install --frozen-lockfile && pnpm build && pnpm --filter @live-class/demo build
     staticPublishPath: apps/demo/out
     autoDeploy: true
     envVars:
